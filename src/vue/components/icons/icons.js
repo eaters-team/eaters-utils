@@ -16,17 +16,19 @@ export default {
             if (Object.prototype.hasOwnProperty.call(options, 'router')) {
                 let router = options.router;
                 if (process.env.NODE_ENV === 'development') {
-                    router.addRoute(
-                        {
-                            path: '/_icons',
-                            component: Vue.extend(IconPage).extend({
-                                data: function () {
-                                    return {
-                                        'spriteUrl': options.spriteUrl
-                                    }
-                                },
-                            })
-                        }
+                    router.addRoutes(
+                        [
+                            {
+                                path: '/_icons',
+                                component: Vue.extend(IconPage).extend({
+                                    data: function () {
+                                        return {
+                                            'spriteUrl': options.spriteUrl
+                                        }
+                                    },
+                                })
+                            }
+                        ]
                     )
                 }
             }
