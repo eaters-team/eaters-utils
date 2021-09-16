@@ -1,15 +1,16 @@
 {
   "name": "eaters-utils",
   "version": "1.0.0",
-  "description": "",
-  "main": "webpack.config.js",
+  "description": "Utilitary classes and components",
+  "author": "Nicolas Duck <snicolas.du@gmail.com>",
+  "private": false,
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/eaters-team/eaters-utils.git"
+  },
+  "main": "src/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "",
-  "license": "ISC",
-  "devDependencies": {
-    "webpack": "^5.52.1",
-    "webpack-cli": "^4.8.0"
-  }
+  "license": "MIT"
 }
