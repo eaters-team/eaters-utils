@@ -12,7 +12,7 @@ module.exports = {
             chunks.push(chunk);
             start = nextStart;
         }
-        return [{ id: id, name: file.name, type: file.type, count: chunks.length, extension: filename.split('.').pop(), chunks: [] }, ...chunks];
+        return [{ id: id, name: file.name, type: file.type, count: chunks.length, extension: file.name.split('.').pop(), chunks: [] }, ...chunks];
     },
     rebuilder: {
         file: {},
