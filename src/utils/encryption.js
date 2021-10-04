@@ -1,4 +1,5 @@
 module.exports = (function(){
+    const ALG = 'AES-CBC'
     let encryption = {
         asymmetric: {
             export: async function (key) {
@@ -61,8 +62,27 @@ module.exports = (function(){
             }
         },
         symmetric: {
+            /**
+             * Deprecated use exportKey instead
+             * @param key
+             * @return {Promise<JsonWebKey>}
+             */
             export: async function (key) {
                 return await window.crypto.subtle.exportKey("jwk", key);
+            },
+            exportKey: async function (key) {
+                return await window.crypto.subtle.exportKey("jwk", key);
+            },
+            importKey: async function(key){
+                return await window.crypto.subtle.importKey(
+                    "jwk", //can be "jwk" or "raw"
+                    key,
+                    {   //this is the algorithm options
+                        name: ALG,
+                    },
+                    true, //whether the key is extractable (i.e. can be used in exportKey)
+                    ["encrypt", "decrypt"]
+                );
             },
             deriveKey: async function(password, salt){
                 let enc = new TextEncoder();
@@ -81,7 +101,7 @@ module.exports = (function(){
                             hash: "SHA-256",
                         },
                         passwordKey,
-                        { name: "AES-GCM", length: 256 },
+                        { name: ALG, length: 256 },
                         true,
                         ['encrypt', 'decrypt']
                     );
@@ -90,7 +110,7 @@ module.exports = (function(){
             generateKey: async function(){
                 let key = await window.crypto.subtle.generateKey(
                     {
-                        name: "AES-GCM",
+                        name: ALG,
                         length: 256
                     },
                     true,
@@ -101,10 +121,13 @@ module.exports = (function(){
             encrypt: async function (password, data) {
                 let iv = window.crypto.getRandomValues(new Uint8Array(16));
                 let salt = window.crypto.getRandomValues(new Uint8Array(16));
-                let cryptoKey = await encryption.symmetric.deriveKey(password, salt);
+                let cryptoKey = password
+                if(!cryptoKey instanceof CryptoKey){
+                    cryptoKey = await encryption.symmetric.deriveKey(password, salt);
+                }
                 let encrypted = await window.crypto.subtle.encrypt(
                     {
-                        name: "AES-GCM",
+                        name: "AES-CBC",
                         iv
                     },
                     cryptoKey,
@@ -117,17 +140,20 @@ module.exports = (function(){
                 let salt = new Uint8Array(data.slice(0, 16));
                 let iv = new Uint8Array(data.slice(16, 32));
                 let content = new Uint8Array(data.slice(32));
-                let cryptoKey = await encryption.symmetric.deriveKey(password, salt);
+                let cryptoKey = password
+                if(!cryptoKey instanceof CryptoKey){
+                    cryptoKey = await encryption.symmetric.deriveKey(password, salt);
+                }
                 let decrypted = await window.crypto.subtle.decrypt(
                     {
-                        name: "AES-GCM",
+                        name: ALG,
                         iv
                     },
                     cryptoKey,
                     content
                 );
 
-                return decrypted;
+                return encryption.glue([decrypted]);
             }
         },
         glue: function(parts){
