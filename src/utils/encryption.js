@@ -122,7 +122,7 @@ module.exports = (function(){
                 let iv = window.crypto.getRandomValues(new Uint8Array(16));
                 let salt = window.crypto.getRandomValues(new Uint8Array(16));
                 let cryptoKey = password
-                if(!cryptoKey instanceof CryptoKey){
+                if(!(cryptoKey instanceof CryptoKey)){
                     cryptoKey = await encryption.symmetric.deriveKey(password, salt);
                 }
                 let encrypted = await window.crypto.subtle.encrypt(
@@ -141,7 +141,7 @@ module.exports = (function(){
                 let iv = new Uint8Array(data.slice(16, 32));
                 let content = new Uint8Array(data.slice(32));
                 let cryptoKey = password
-                if(!cryptoKey instanceof CryptoKey){
+                if(!(cryptoKey instanceof CryptoKey)){
                     cryptoKey = await encryption.symmetric.deriveKey(password, salt);
                 }
                 let decrypted = await window.crypto.subtle.decrypt(
